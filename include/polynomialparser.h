@@ -9,8 +9,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-#ifndef _POLYNOMIALPARSER_H_
-#define _POLYNOMIALPARSER_H_
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <sstream>
+#include <cstring>
+
+
+#ifndef POLYNOMIALPARSER_H
+#define POLYNOMIALPARSER_H
+
+
+
 
 #define MINUS "-"
 #define STAR "*"
@@ -20,16 +31,19 @@ typedef struct {
         int exp;
 }PolyAndExp;
 
-
-
-class PolynomialParser{
+class PolynomialParser {
 
 private:
 	std::string polynomial;
+        std::string mPoly;
 
-public:
-	PolynomialParser();
-	PolynomialParser(std::string polynomial);
+        std::vector<std::string> mAllPolyTerms; 
+        std::vector<std::string> mAllPolyVariables;
+        std::vector<std::vector<int> > mAllPolyTermsExponents; 
+        std::vector<std::vector<int> > mAllPolyTermsCoefficients;
+        int mOuterExponent;
+        
+        
 	
 	bool is_digit_cpp98(const std::string &str);
 	bool isMinus(const std::string &str, const std::string &str1);
@@ -45,7 +59,17 @@ public:
 	PolyAndExp SplitPolyInBracket();
 	bool ValidPoly();
 	int PolyExponent();
-}
 
+public:
+	PolynomialParser();
+	PolynomialParser(std::string poly);
+        
+        std::vector<std::string> getmAllPolyTerms();
+        std::vector<std::string> getmAllPolyVariables();
+        std::vector<std::vector<int> > getmAllPolyTermsExponents();
+        std::vector<std::vector<int> > getmAllPolyTermsCoefficients();
 
-#endif
+};
+
+#endif /* POLYNOMIALPARSER_H */
+

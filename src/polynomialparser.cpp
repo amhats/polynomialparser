@@ -1,9 +1,39 @@
+#include "PolynomialParser.h"
+
 PolynomialParser::PolynomialParser(){
-	this.polynomial = " ";
+	this->polynomial = " ";
 }
 
-PolynomialParser::PolynomialParser(std::string polynomial){
-	this.polynomial = polynomial;
+PolynomialParser::PolynomialParser(std::string poly){
+	this->polynomial = poly;
+        this->polynomial.erase(std::remove_if(polynomial.begin(), polynomial.end(), isspace), polynomial.end()); //remove if there is a space in the string
+        
+        mPoly = polynomial;
+        std::string valPoly;
+        PolyAndExp pe = SplitPolyInBracket();
+        valPoly = pe.poly;
+	int mOuterExponent = pe.exp;
+
+        mAllPolyTerms = SplitPolyToTerms(valPoly, "+-");
+        mAllPolyVariables = AllPolyVaraibles(mAllPolyTerms);
+        mAllPolyTermsExponents = AllPolyTermsExponents(mAllPolyVariables, mAllPolyTerms);
+        mAllPolyTermsCoefficients = AllPolyTermsCoeffs(mAllPolyVariables, mAllPolyTerms);
+}
+
+std::vector<std::string> PolynomialParser::getmAllPolyTerms(){
+    return mAllPolyTerms;
+}
+
+std::vector<std::string> PolynomialParser::getmAllPolyVariables(){
+    return mAllPolyVariables;
+}
+
+std::vector<std::vector<int> > PolynomialParser::getmAllPolyTermsExponents(){
+    return mAllPolyTermsExponents;
+}
+
+std::vector<std::vector<int> > PolynomialParser::getmAllPolyTermsCoefficients(){
+    return mAllPolyTermsCoefficients;
 }
 
 /**
@@ -56,7 +86,7 @@ void PolynomialParser::remove_all_space(std::string &str)
  * @param s String format of the character to search.
  * @return numeric position of the character in the string.
  */
-size_t SparseMultivariateRationalPolynomial::findCharPosition(std::string &v, std::string s)
+size_t PolynomialParser::findCharPosition(std::string &v, std::string s)
 {
     size_t it = v.find(s);
     if(it != std::string::npos)
@@ -464,5 +494,7 @@ int PolynomialParser::PolyExponent()
     PolyAndExp exp = SplitPolyInBracket();
     return exp.exp;
 }
+
+
 
 
