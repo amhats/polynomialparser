@@ -32,7 +32,7 @@ std::vector<std::vector<int> > PolynomialParser::getmAllPolyTermsExponents(){
     return mAllPolyTermsExponents;
 }
 
-std::vector<std::vector<int> > PolynomialParser::getmAllPolyTermsCoefficients(){
+std::vector<std::vector<mpz_class> > PolynomialParser::getmAllPolyTermsCoefficients(){
     return mAllPolyTermsCoefficients;
 }
 
@@ -56,6 +56,13 @@ bool PolynomialParser::is_digit_cpp98(const std::string &str)
             return false;
     }
     return true;
+}
+
+bool PolynomialParser::isFloat( std::string myString ) {
+    std::istringstream iss(myString);
+    float f;
+    iss >> std::noskipws >> f; 
+    return iss.eof() && !iss.fail(); 
 }
 
 /**
@@ -287,7 +294,7 @@ std::vector<std::string> PolynomialParser::AllPolyVaraibles(std::vector<std::str
     for( iterm=allTerms.begin(); iterm<allTerms.end(); iterm++)
     {
 
-        std::vector<std::string> r = SimpleMultiDelimStringTokenizer(*iterm, "-*^()");
+        std::vector<std::string> r = SimpleMultiDelimStringTokenizer(*iterm, "-*^().");
 
         std::vector<std::string>::iterator it(0);
         for( it=r.begin(); it<r.end(); it++)
@@ -365,43 +372,47 @@ std::vector<std::vector<int> >  PolynomialParser::AllPolyTermsExponents(std::vec
     return exponent;
 }
 
-std::vector<std::vector<int> > PolynomialParser::AllPolyTermsCoeffs(std::vector<std::string>& allvariables, std::vector<std::string>& polyterms)
+std::vector<std::vector<mpz_class> > PolynomialParser::AllPolyTermsCoeffs(std::vector<std::string>& allvariables, std::vector<std::string>& polyterms)
 {
     // contain all the coeffs
-    std::vector<std::vector<int> > coeff(polyterms.size(), std::vector<int>(0));
+    std::vector<std::vector<mpz_class> > coeff(polyterms.size(), std::vector<mpz_class>(0));
 
     // start with the first poly term that is provided in the argument
     for(unsigned int i=0; i<polyterms.size(); i++)
     {
         // split the term based the given delimeter and store them in a container
         std::vector<std::string> termtokenized = SimpleMultiDelimStringTokenizer(polyterms[i], "^*");
+        //std::cout << "tok : " << termtokenized[0]<< std::endl;
+        //std::cout << is_digit_cpp98(termtokenized[0]) << std::endl;
             // first string is a minus sign by itself and second string a string made of alphabets
-            if(isMinus(std::string(1, termtokenized[0][0]), MINUS) && !is_digit_cpp98(termtokenized[0].substr(1, termtokenized[0].length())))
+            if(isMinus(std::string(1, termtokenized[0][0]), MINUS) && !is_digit_cpp98(termtokenized[0].substr(1, termtokenized[0].length()))&&!isFloat(termtokenized[0]))
             {
                 coeff[i].push_back(-1);
             }
             // first string a string made of alphabets
-            else if((termtokenized.size()==1) && !is_digit_cpp98(termtokenized[0]))
+            else if((termtokenized.size()==1) && !is_digit_cpp98(termtokenized[0]) &&!isFloat(termtokenized[0]))
             {
                 coeff[i].push_back(1);
             }
             // termtokenized is not size=1 and first char is alpha
-            else if(!is_digit_cpp98(termtokenized[0]))
+            else if(!is_digit_cpp98(termtokenized[0]) && !isFloat(termtokenized[0]))
             {
                 coeff[i].push_back(1);
             }
-            else if(isMinus(std::string(1, termtokenized[0][0]), MINUS) && !is_digit_cpp98(termtokenized[0].substr(1, termtokenized[0].length())))
+            else if(isMinus(std::string(1, termtokenized[0][0]), MINUS) && !is_digit_cpp98(termtokenized[0].substr(1, termtokenized[0].length())) && !isFloat(termtokenized[0]))
             {
                 coeff[i].push_back(-1);
             }
             // or termtokenizer is in the form -8*x^8 or 9*y^7 and so....
             else
             {
-                int tempint;
+                //std::cout << "here : " << termtokenized[0] << std::endl;
+                mpz_class tempint;
                 std::string tempstring;
                 remove_all_space(termtokenized[0]);
                 tempstring = termtokenized[0];
-                std::stringstream(tempstring) >> tempint;
+                std::istringstream iss(tempstring);
+                iss >> tempint;               
                 coeff[i].push_back(tempint);
             }
     }
@@ -494,6 +505,7 @@ int PolynomialParser::PolyExponent()
     PolyAndExp exp = SplitPolyInBracket();
     return exp.exp;
 }
+
 
 
 

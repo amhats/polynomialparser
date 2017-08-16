@@ -9,17 +9,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
+#ifndef POLYNOMIALPARSER_H
+#define POLYNOMIALPARSER_H
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <string>
 #include <sstream>
 #include <cstring>
-
-
-#ifndef POLYNOMIALPARSER_H
-#define POLYNOMIALPARSER_H
-
+#include <gmpxx.h>
+#include <gmp.h>
 
 
 
@@ -35,13 +35,13 @@ class PolynomialParser {
 
 private:
 	std::string polynomial;
-        std::string mPoly;
+    std::string mPoly;
 
-        std::vector<std::string> mAllPolyTerms; 
-        std::vector<std::string> mAllPolyVariables;
-        std::vector<std::vector<int> > mAllPolyTermsExponents; 
-        std::vector<std::vector<int> > mAllPolyTermsCoefficients;
-        int mOuterExponent;
+    std::vector<std::string> mAllPolyTerms; 
+    std::vector<std::string> mAllPolyVariables;
+    std::vector<std::vector<int> > mAllPolyTermsExponents; 
+    std::vector<std::vector<mpz_class> > mAllPolyTermsCoefficients;
+    int mOuterExponent;
         
         
 	
@@ -55,21 +55,27 @@ private:
 	std::vector<std::string> SimpleMultiDelimStringTokenizer(const std::string poly, std::string delim);
 	std::vector<std::string> AllPolyVaraibles(std::vector<std::string>& allTerms);
 	std::vector<std::vector<int> >  AllPolyTermsExponents(std::vector<std::string>& allvariables, std::vector<std::string>& polyterms);
-	std::vector<std::vector<int> > AllPolyTermsCoeffs(std::vector<std::string>& allvariables, std::vector<std::string>& polyterms);
+	std::vector<std::vector<mpz_class> > AllPolyTermsCoeffs(std::vector<std::string>& allvariables, std::vector<std::string>& polyterms);
 	PolyAndExp SplitPolyInBracket();
 	bool ValidPoly();
 	int PolyExponent();
+        
+    bool isFloat( std::string myString );
 
 public:
 	PolynomialParser();
 	PolynomialParser(std::string poly);
         
-        std::vector<std::string> getmAllPolyTerms();
-        std::vector<std::string> getmAllPolyVariables();
-        std::vector<std::vector<int> > getmAllPolyTermsExponents();
-        std::vector<std::vector<int> > getmAllPolyTermsCoefficients();
+    std::vector<std::string> getmAllPolyTerms();
+    std::vector<std::string> getmAllPolyVariables();
+    std::vector<std::vector<int> > getmAllPolyTermsExponents();
+    std::vector<std::vector<mpz_class> > getmAllPolyTermsCoefficients();
 
+        
 };
 
 #endif /* POLYNOMIALPARSER_H */
+
+
+
 
